@@ -1,6 +1,7 @@
 package learningtest.com.fasterxml.jackson.databind;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -47,6 +48,23 @@ class ObjectMapperTests {
     void readValueWithJsonAlias() throws JsonProcessingException {
         String json = "{\"firstNameVariant\":\"Johnny\",\"lastName\":\"Lim\"}";
         assertThat(this.mapper.readValue(json, Person.class)).isEqualTo(PERSON);
+    }
+
+    @Test
+    void readValueWithEmptyString() {
+        assertThatExceptionOfType(JsonMappingException.class)
+                .isThrownBy(() -> mapper.readValue("", Person.class))
+                .withMessageContaining("Source: REDACTED")
+                .withMessageNotContaining("Source: (String)\"\"");
+    }
+
+    @Test
+    void readValueWithEmptyStringWhenIncludeSourceInLocationIsEnabled() {
+        ObjectMapper mapper = new ObjectMapper().configure(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION, true);
+
+        assertThatExceptionOfType(JsonMappingException.class)
+                .isThrownBy(() -> mapper.readValue("", Person.class))
+                .withMessageContaining("Source: (String)\"\"");
     }
 
     @Test
