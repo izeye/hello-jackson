@@ -67,6 +67,21 @@ class ObjectMapperTests {
                 .withMessageContaining("Source: (String)\"\"");
     }
 
+    // It might be convenient but also confusing.
+    @Test
+    void readValueWithStringToIntConversion() throws JsonProcessingException {
+        String json = "{\"number\":\"1\"}";
+        IntContainer intContainer = this.mapper.readValue(json, IntContainer.class);
+        assertThat(intContainer.getNumber()).isEqualTo(1);
+    }
+
+    @Data
+    static class IntContainer {
+
+        int number;
+
+    }
+
     @Test
     void writeValueAsStringWithObjectWithExceptionThrowingGetterLikeMethod() {
         ClassWithExceptionThrowingGetterLikeMethod object = new ClassWithExceptionThrowingGetterLikeMethod("Johnny");
